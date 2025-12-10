@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>复旦肿瘤医院就医攻略 - 上海陪诊小河</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- 引入 Font Awesome 以支持 fa-person-digging 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .service-card {
+            transition: all 0.2s ease-in-out;
+        }
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 隐藏滚动条 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* 二维码样式 */
+        #qrcode img {
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="text-slate-700 flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-40 border-b border-slate-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 sm:h-20 py-2">
+                
+                <!-- Left: Brand -->
+                <div class="flex items-center gap-3">
+                    <div class="bg-gradient-to-br from-teal-500 to-emerald-600 text-white p-2 rounded-lg shadow-sm hidden xs:flex items-center justify-center">
+                        <i data-lucide="cross" class="w-4 h-4"></i>
+                    </div>
+                    
+                    <div class="flex flex-col justify-center">
+                        <h1 class="font-bold text-base sm:text-lg text-slate-800 tracking-tight leading-none mb-1">
+                            复旦肿瘤就医攻略
+                        </h1>
+                        <div class="flex items-center text-[10px] sm:text-xs text-slate-400 font-medium tracking-wide">
+                            <span class="hover:text-teal-600 transition-colors cursor-default">上海陪诊小河</span>
+                            <span class="mx-2 text-slate-200">|</span>
+                            <span class="opacity-90">17898872018</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Consult Button -->
+                <div>
+                    <button onclick="toggleQrModal(true)" class="group flex items-center gap-2 pl-3 pr-2 py-1.5 sm:pl-4 sm:pr-3 sm:py-2 rounded-full bg-slate-50 hover:bg-white hover:shadow-md hover:ring-1 hover:ring-slate-100 transition-all border border-slate-100 cursor-pointer">
+                        <span class="text-xs font-medium text-slate-500 group-hover:text-teal-700 transition-colors">需代办/咨询?</span>
+                        <div class="bg-white group-hover:bg-teal-50 p-1 rounded-full shadow-sm transition-colors">
+                            <i data-lucide="message-circle-question" class="w-3.5 h-3.5 text-slate-400 group-hover:text-teal-600 transition-colors"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow">
+        
+        <!-- Grid Container -->
+        <div id="gridContainer" class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+            <!-- Cards will be injected here -->
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-4 py-8 text-center border-t border-slate-200 bg-white">
+        <div class="flex items-center justify-center gap-2 mb-2">
+            <i data-lucide="heart-handshake" class="w-4 h-4 text-teal-500"></i>
+            <span class="text-slate-600 font-bold text-sm">上海陪诊小河</span>
+        </div>
+        <p class="text-xs text-slate-400">178 9887 2018 (微信同号)</p>
+        <p class="text-[10px] text-slate-300 mt-2">内容仅供经验参考，具体请以医院官方规定为准</p>
+    </footer>
+
+    <!-- Contact QR Modal -->
+    <div id="qrModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="toggleQrModal(false)"></div>
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full relative z-10 shadow-xl transform transition-all scale-100">
+            <button onclick="toggleQrModal(false)" class="absolute top-3 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="text-center mt-2">
+                <h3 class="text-lg font-bold text-slate-800">添加微信联系</h3>
+                <p class="text-sm text-slate-500 mb-4">长按识别或扫一扫下方二维码</p>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4 flex justify-center">
+                    <div id="qrcode"></div>
+                </div>
+                <div class="text-teal-700 font-bold text-lg">上海陪诊小河</div>
+                <div class="text-slate-400 text-sm mt-1">178 9887 2018</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WIP (Work In Progress) Modal -->
+    <div id="wipModal" class="fixed inset-0 z-[70] flex items-center justify-center p-4 hidden">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onclick="toggleWipModal(false)"></div>
+        
+        <!-- Modal Content -->
+        <div class="bg-white rounded-[2rem] p-8 max-w-[280px] sm:max-w-xs w-full relative z-10 shadow-2xl transform transition-all scale-100 flex flex-col items-center text-center">
+            
+            <!-- Icon Circle (Updated with Font Awesome) -->
+            <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#fef3c7] text-[#d97706] mb-3">
+               <i class="fa-solid fa-person-digging"></i>
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-xl font-bold text-slate-800 mb-3 tracking-tight">攻略更新中</h3>
+            
+            <!-- Description -->
+            <p class="text-slate-400 text-sm leading-relaxed mb-8 font-medium">
+                小河正在整理这部分的最新经验，请稍后再来看看。
+            </p>
+
+            <!-- Button -->
+            <button onclick="toggleWipModal(false)" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3.5 rounded-xl transition-colors tracking-wide text-sm">
+                知道了
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ================= 数据源配置 =================
+        const services = [
+            {
+                id: 1,
+                name: "病理会诊(送切片)",
+                short: "病理送片",
+                icon: "microscope", 
+                tags: ["初诊必看", "切片整理"],
+                color: "bg-rose-50 text-rose-700 border-rose-100",
+                iconColor: "text-rose-600",
+                barColor: "bg-rose-500",
+                // 添加跳转链接
+                link: "https://hz.imaginationriver.com/"
+            },
+            {
+                id: 2,
+                name: "病理补费/补白片/取报告/邮寄",
+                short: "补费/补白片/取报告",
+                icon: "file-text",
+                tags: ["后续流程", "省时技巧"],
+                color: "bg-indigo-50 text-indigo-700 border-indigo-100",
+                iconColor: "text-indigo-600",
+                barColor: "bg-indigo-500",
+                // 添加跳转链接
+                link: "https://bfbg.imaginationriver.com/"
+            },
+            {
+                id: 3,
+                name: "出入院办理攻略",
+                short: "出入院办理",
+                icon: "luggage",
+                tags: ["证件准备", "医保登记"],
+                color: "bg-amber-50 text-amber-700 border-amber-100",
+                iconColor: "text-amber-600",
+                barColor: "bg-amber-500"
+            },
+            {
+                id: 4,
+                name: "放疗攻略",
+                short: "放疗中心",
+                icon: "zap", 
+                tags: ["定位CT", "治疗流程"],
+                color: "bg-emerald-50 text-emerald-700 border-emerald-100",
+                iconColor: "text-emerald-600",
+                barColor: "bg-emerald-500"
+            },
+            {
+                id: 5,
+                name: "日间化疗攻略",
+                short: "日间化疗",
+                icon: "activity", 
+                tags: ["PICC维护", "预约"],
+                color: "bg-cyan-50 text-cyan-700 border-cyan-100",
+                iconColor: "text-cyan-600",
+                barColor: "bg-cyan-500"
+            },
+            {
+                id: 6,
+                name: "楼层科室导航",
+                short: "楼层导航",
+                icon: "map-pin",
+                tags: ["找路", "地图"],
+                color: "bg-slate-100 text-slate-700 border-slate-200",
+                iconColor: "text-slate-600",
+                barColor: "bg-slate-500"
+            }
+        ];
+
+        // ================= 渲染逻辑 =================
+        const gridContainer = document.getElementById('gridContainer');
+
+        function renderServices() {
+            gridContainer.innerHTML = '';
+            
+            services.forEach(s => {
+                const tagsHtml = s.tags.slice(0, 2).map(tag => 
+                    `<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${s.color} mr-1 opacity-90">${tag}</span>`
+                ).join('');
+
+                const card = document.createElement('div');
+                card.className = `service-card bg-white rounded-xl p-4 border border-slate-100 shadow-sm cursor-pointer relative overflow-hidden group flex flex-col items-start min-h-[140px]`;
+                
+                // 判断逻辑：如果有链接则跳转，没有链接则显示“更新中”弹窗
+                if (s.link) {
+                    card.onclick = () => window.location.href = s.link;
+                } else {
+                    card.onclick = () => toggleWipModal(true);
+                }
+
+                card.innerHTML = `
+                    <div class="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center shadow-inner mb-3 group-hover:bg-white group-hover:shadow-md transition-all">
+                        <i data-lucide="${s.icon}" class="w-5 h-5 text-slate-400 group-hover:${s.iconColor} transition-colors"></i>
+                    </div>
+                    
+                    <h3 class="text-sm font-bold text-slate-800 mb-1 group-hover:${s.iconColor} transition-colors">${s.short}</h3>
+                    <p class="text-[10px] text-slate-400 mb-2 line-clamp-1">${s.name}</p>
+                    
+                    <div class="mt-auto pt-1">
+                        ${tagsHtml}
+                    </div>
+                    
+                    <div class="absolute bottom-0 left-0 w-full h-1 ${s.barColor} transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                `;
+                gridContainer.appendChild(card);
+            });
+            
+            lucide.createIcons();
+        }
+
+        // ================= WIP (更新中) 弹窗逻辑 =================
+        function toggleWipModal(show) {
+            const wipModal = document.getElementById('wipModal');
+            if (show) {
+                wipModal.classList.remove('hidden');
+            } else {
+                wipModal.classList.add('hidden');
+            }
+        }
+
+        // ================= 二维码弹窗逻辑 =================
+        let qrGenerated = false;
+        function toggleQrModal(show) {
+            const qrModal = document.getElementById('qrModal');
+            if (show) {
+                qrModal.classList.remove('hidden');
+                if (!qrGenerated) {
+                    new QRCode(document.getElementById("qrcode"), {
+                        text: "https://u.wechat.com/EKcPjhL9GyGJtvlbGIc9Bbs",
+                        width: 180,
+                        height: 180,
+                        colorDark : "#334155",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+                    qrGenerated = true;
+                }
+            } else {
+                qrModal.classList.add('hidden');
+            }
+        }
+
+        // Initialize
+        renderServices();
+    </script>
+</body>
+</html>
