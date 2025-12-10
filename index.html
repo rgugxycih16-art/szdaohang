@@ -35,9 +35,12 @@
             scrollbar-width: none;
         }
         
-        /* 二维码样式 */
+        /* 二维码样式 - 确保图片占满容器以便点击 */
         #qrcode img {
             margin: 0 auto;
+            display: block;
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>
@@ -110,7 +113,8 @@
                 <h3 class="text-lg font-bold text-slate-800">添加微信联系</h3>
                 <p class="text-sm text-slate-500 mb-4">长按识别或扫一扫下方二维码</p>
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4 flex justify-center">
-                    <div id="qrcode"></div>
+                    <!-- 这个容器将用来放置生成的图片 -->
+                    <div id="qrcode" class="w-[180px] h-[180px] bg-white flex items-center justify-center"></div>
                 </div>
                 <div class="text-teal-700 font-bold text-lg">上海陪诊小河</div>
                 <div class="text-slate-400 text-sm mt-1">178 9887 2018</div>
@@ -158,7 +162,6 @@
                 color: "bg-rose-50 text-rose-700 border-rose-100",
                 iconColor: "text-rose-600",
                 barColor: "bg-rose-500",
-                // 添加跳转链接
                 link: "https://hz.imaginationriver.com/"
             },
             {
@@ -170,7 +173,6 @@
                 color: "bg-indigo-50 text-indigo-700 border-indigo-100",
                 iconColor: "text-indigo-600",
                 barColor: "bg-indigo-500",
-                // 添加跳转链接
                 link: "https://bfbg.imaginationriver.com/"
             },
             {
@@ -229,7 +231,6 @@
                 const card = document.createElement('div');
                 card.className = `service-card bg-white rounded-xl p-4 border border-slate-100 shadow-sm cursor-pointer relative overflow-hidden group flex flex-col items-start min-h-[140px]`;
                 
-                // 判断逻辑：如果有链接则跳转，没有链接则显示“更新中”弹窗
                 if (s.link) {
                     card.onclick = () => window.location.href = s.link;
                 } else {
@@ -266,14 +267,20 @@
             }
         }
 
-        // ================= 二维码弹窗逻辑 =================
+        // ================= 二维码弹窗逻辑 (Android修复版) =================
         let qrGenerated = false;
         function toggleQrModal(show) {
             const qrModal = document.getElementById('qrModal');
+            
             if (show) {
                 qrModal.classList.remove('hidden');
+                
                 if (!qrGenerated) {
-                    new QRCode(document.getElementById("qrcode"), {
+                    const qrContainer = document.getElementById("qrcode");
+                    qrContainer.innerHTML = ""; // 确保容器是空的
+
+                    // 1. 生成二维码
+                    const qrcodeObj = new QRCode(qrContainer, {
                         text: "https://u.wechat.com/EKcPjhL9GyGJtvlbGIc9Bbs",
                         width: 180,
                         height: 180,
@@ -281,6 +288,26 @@
                         colorLight : "#ffffff",
                         correctLevel : QRCode.CorrectLevel.H
                     });
+
+                    // 2. 【关键修复】延迟执行，将 Canvas 转换为真正的 Image 标签
+                    // 这样安卓手机长按就能识别出"图片"并弹出菜单
+                    setTimeout(() => {
+                        const canvas = qrContainer.querySelector('canvas');
+                        if (canvas) {
+                            const dataUrl = canvas.toDataURL("image/png");
+                            
+                            // 创建一个新的 img 标签
+                            const img = document.createElement("img");
+                            img.src = dataUrl;
+                            img.style.width = "100%"; // 确保图片填满
+                            img.style.display = "block";
+                            
+                            // 清空容器，只保留这张图
+                            qrContainer.innerHTML = "";
+                            qrContainer.appendChild(img);
+                        }
+                    }, 50); // 50ms 延迟足以让 Canvas 绘制完成
+
                     qrGenerated = true;
                 }
             } else {
