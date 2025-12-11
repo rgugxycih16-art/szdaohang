@@ -121,7 +121,7 @@
         </div>
     </div>
 
-    <!-- Radiation Selection Modal (New) -->
+    <!-- Radiation Selection Modal (放疗) -->
     <div id="radiationModal" class="fixed inset-0 z-[65] flex items-center justify-center p-4 hidden">
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="toggleRadiationModal(false)"></div>
         <div class="bg-white rounded-[1.5rem] p-6 max-w-[300px] w-full relative z-10 shadow-2xl transform transition-all scale-100">
@@ -156,6 +156,51 @@
                             <i class="fa-solid fa-venus text-sm"></i>
                         </div>
                         <span class="font-bold text-slate-700">妇科放疗</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-slate-500"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chemo Selection Modal (化疗 - New) -->
+    <div id="chemoModal" class="fixed inset-0 z-[65] flex items-center justify-center p-4 hidden">
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="toggleChemoModal(false)"></div>
+        <div class="bg-white rounded-[1.5rem] p-6 max-w-[300px] w-full relative z-10 shadow-2xl transform transition-all scale-100">
+            
+            <button onclick="toggleChemoModal(false)" class="absolute top-3 right-4 text-slate-300 hover:text-slate-500">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="text-center mb-5">
+                <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-cyan-100 text-cyan-600 mb-3">
+                    <i data-lucide="activity" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800">化疗服务指南</h3>
+            </div>
+            
+            <div class="flex flex-col gap-3">
+                <!-- 输液港/PICC-->
+                <button onclick="window.location.href='https://hlzb.imaginationriver.com/'" class="w-full flex items-center justify-between p-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-100 transition-all group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
+                            <i class="fa-solid fa-syringe text-sm"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="font-bold text-slate-700 block text-sm"> 输液港/PICC置管</span>
+                            <span class="text-[10px] text-slate-400">安装与维护准备</span>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-slate-500"></i>
+                </button>
+
+                <!-- 化疗攻略 -->
+                <button onclick="window.location.href='https://hl.imaginationriver.com/'" class="w-full flex items-center justify-between p-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-100 transition-all group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-600">
+                            <i class="fa-solid fa-notes-medical text-sm"></i>
+                        </div>
+                        <span class="font-bold text-slate-700">化疗攻略</span>
                     </div>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-slate-500"></i>
                 </button>
@@ -246,6 +291,7 @@
                 color: "bg-cyan-50 text-cyan-700 border-cyan-100",
                 iconColor: "text-cyan-600",
                 barColor: "bg-cyan-500"
+                // link removed to trigger custom logic
             },
             {
                 id: 6,
@@ -275,8 +321,11 @@
                 
                 // === 修改后的点击逻辑 ===
                 if (s.id === 4) {
-                    // ID 4 是放疗，点击打开放疗选择弹窗
+                    // ID 4 放疗 -> 放疗弹窗
                     card.onclick = () => toggleRadiationModal(true);
+                } else if (s.id === 5) {
+                    // ID 5 化疗 -> 化疗弹窗 (New)
+                    card.onclick = () => toggleChemoModal(true);
                 } else if (s.link) {
                     // 有链接直接跳转
                     card.onclick = () => window.location.href = s.link;
@@ -316,13 +365,20 @@
         }
 
         function handleBreastRadiation() {
-            // 关闭放疗选择弹窗
             toggleRadiationModal(false);
-            // 显示 WIP 弹窗
-            // 稍微延迟一点点以获得更好的视觉体验
             setTimeout(() => {
                 toggleWipModal(true);
             }, 150);
+        }
+
+        // ================= 化疗选择弹窗逻辑 (New) =================
+        function toggleChemoModal(show) {
+            const modal = document.getElementById('chemoModal');
+            if (show) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
         }
 
         // ================= WIP (更新中) 弹窗逻辑 =================
@@ -345,9 +401,8 @@
                 
                 if (!qrGenerated) {
                     const qrContainer = document.getElementById("qrcode");
-                    qrContainer.innerHTML = ""; // 确保容器是空的
+                    qrContainer.innerHTML = ""; 
 
-                    // 1. 生成二维码
                     const qrcodeObj = new QRCode(qrContainer, {
                         text: "https://u.wechat.com/EKcPjhL9GyGJtvlbGIc9Bbs",
                         width: 180,
@@ -357,24 +412,18 @@
                         correctLevel : QRCode.CorrectLevel.H
                     });
 
-                    // 2. 【关键修复】延迟执行，将 Canvas 转换为真正的 Image 标签
-                    // 这样安卓手机长按就能识别出"图片"并弹出菜单
                     setTimeout(() => {
                         const canvas = qrContainer.querySelector('canvas');
                         if (canvas) {
                             const dataUrl = canvas.toDataURL("image/png");
-                            
-                            // 创建一个新的 img 标签
                             const img = document.createElement("img");
                             img.src = dataUrl;
-                            img.style.width = "100%"; // 确保图片填满
+                            img.style.width = "100%";
                             img.style.display = "block";
-                            
-                            // 清空容器，只保留这张图
                             qrContainer.innerHTML = "";
                             qrContainer.appendChild(img);
                         }
-                    }, 50); // 50ms 延迟足以让 Canvas 绘制完成
+                    }, 50);
 
                     qrGenerated = true;
                 }
