@@ -11,7 +11,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap');
         
         body {
             font-family: 'Noto Sans SC', sans-serif;
@@ -122,6 +121,48 @@
         </div>
     </div>
 
+    <!-- Radiation Selection Modal (New) -->
+    <div id="radiationModal" class="fixed inset-0 z-[65] flex items-center justify-center p-4 hidden">
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="toggleRadiationModal(false)"></div>
+        <div class="bg-white rounded-[1.5rem] p-6 max-w-[300px] w-full relative z-10 shadow-2xl transform transition-all scale-100">
+            
+            <button onclick="toggleRadiationModal(false)" class="absolute top-3 right-4 text-slate-300 hover:text-slate-500">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="text-center mb-5">
+                <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 mb-3">
+                    <i data-lucide="zap" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800">选择放疗类型</h3>
+            </div>
+            
+            <div class="flex flex-col gap-3">
+                <!-- 乳腺放疗按钮 -->
+                <button onclick="handleBreastRadiation()" class="w-full flex items-center justify-between p-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-100 transition-all group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-500">
+                            <i class="fa-solid fa-ribbon text-sm"></i>
+                        </div>
+                        <span class="font-bold text-slate-700">乳腺放疗</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-slate-500"></i>
+                </button>
+
+                <!-- 妇科放疗按钮 -->
+                <button onclick="window.location.href='https://fkfl.imaginationriver.com/'" class="w-full flex items-center justify-between p-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-100 transition-all group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-500">
+                            <i class="fa-solid fa-venus text-sm"></i>
+                        </div>
+                        <span class="font-bold text-slate-700">妇科放疗</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-slate-500"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- WIP (Work In Progress) Modal -->
     <div id="wipModal" class="fixed inset-0 z-[70] flex items-center justify-center p-4 hidden">
         <!-- Backdrop -->
@@ -194,6 +235,7 @@
                 color: "bg-emerald-50 text-emerald-700 border-emerald-100",
                 iconColor: "text-emerald-600",
                 barColor: "bg-emerald-500"
+                // link removed to trigger custom logic
             },
             {
                 id: 5,
@@ -231,9 +273,15 @@
                 const card = document.createElement('div');
                 card.className = `service-card bg-white rounded-xl p-4 border border-slate-100 shadow-sm cursor-pointer relative overflow-hidden group flex flex-col items-start min-h-[140px]`;
                 
-                if (s.link) {
+                // === 修改后的点击逻辑 ===
+                if (s.id === 4) {
+                    // ID 4 是放疗，点击打开放疗选择弹窗
+                    card.onclick = () => toggleRadiationModal(true);
+                } else if (s.link) {
+                    // 有链接直接跳转
                     card.onclick = () => window.location.href = s.link;
                 } else {
+                    // 其他没有链接的，显示 WIP 弹窗
                     card.onclick = () => toggleWipModal(true);
                 }
 
@@ -255,6 +303,26 @@
             });
             
             lucide.createIcons();
+        }
+
+        // ================= 放疗选择弹窗逻辑 =================
+        function toggleRadiationModal(show) {
+            const modal = document.getElementById('radiationModal');
+            if (show) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function handleBreastRadiation() {
+            // 关闭放疗选择弹窗
+            toggleRadiationModal(false);
+            // 显示 WIP 弹窗
+            // 稍微延迟一点点以获得更好的视觉体验
+            setTimeout(() => {
+                toggleWipModal(true);
+            }, 150);
         }
 
         // ================= WIP (更新中) 弹窗逻辑 =================
